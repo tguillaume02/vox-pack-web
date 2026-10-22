@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vox-Pack-Web</title>
+<meta name="description" content="Crée les fichiers de voix de ta radio EdgeTX">
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+<div id="bandeau" class="bandeau" role="status" aria-live="polite" hidden>
+  <span class="sablier" aria-hidden="true"></span>
+  <span id="bandeau-texte"></span>
+</div>
+<main class="app">
+  <header class="entete">
+    <div class="menu-zone">
+      <button id="btn-menu" class="rond" aria-haspopup="true" aria-expanded="false" aria-label="Menu">☰</button>
+      <div id="menu" class="menu" hidden>
+        <button data-action="exporter" data-t="menu_exporter"></button>
+        <button data-action="importer" data-t="menu_importer"></button>
+        <button data-action="defaut" data-t="menu_defaut"></button>
+        <hr>
+        <button data-action="systeme" data-t="menu_sons_systeme"></button>
+        <hr>
+        <div class="menu-titre" data-t="menu_langue"></div>
+        <button data-action="langue-fr">Français</button>
+        <button data-action="langue-en">English</button>
+      </div>
+    </div>
+    <div class="marque">
+      <img class="logo" src="logo.png" alt="Vox-Pack-Web">
+      <p class="sous-titre"><span data-t="sous_titre_par">Portage web non officiel par</span> <a href="https://github.com/tguillaume02/vox-pack-web" target="_blank" rel="noopener">tguillaume02</a><span data-t="sous_titre_base">, basé sur</span> <a href="https://github.com/ritchy-lab/Vox-Pack" target="_blank" rel="noopener">ritchy-lab/Vox-Pack</a> (MIT)</p>
+    </div>
+    <div class="droite">
+      <div class="boutons-haut">
+        <button id="btn-aide" class="rond" aria-label="Aide">?</button>
+        <a class="rond kofi" href="https://ko-fi.com/thibaultguillaume" target="_blank" rel="noopener" data-t="kofi">☕ M'offrir un café</a>
+        <a class="rond kofi projets" href="https://tguillaume02.github.io/" target="_blank" rel="noopener" data-t="projets">🔗 Mes autres projets</a>
+      </div>
+      <div class="robots">
+        <div id="lbl-robot" class="lbl-robot"></div>
+        <div class="pastilles">
+          <button class="pastille" data-robot="1" aria-label="Robot 1"></button>
+          <button class="pastille" data-robot="2" aria-label="Robot 2"></button>
+          <button class="pastille" data-robot="3" aria-label="Robot 3"></button>
+          <button class="pastille" data-robot="4" aria-label="HAL 9000"></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="barre">
+    <select id="voix" aria-label="Voix"></select>
+    <select id="niveau" aria-label="Volume"></select>
+    <button id="btn-ajouter" class="btn" data-t="ajouter"></button>
+    <button id="btn-supprimer" class="btn" data-t="supprimer"></button>
+    <button id="btn-ecouter" class="btn" data-t="ecouter"></button>
+  </section>
+  <div id="zone-curseur" class="curseur" hidden>
+    <label for="curseur" data-t="niveau_curseur"></label>
+    <input type="range" id="curseur" min="-20" max="6" step="1">
+    <output id="val-curseur" for="curseur"></output>
+  </div>
+
+  <section class="tableau">
+    <div class="tete">
+      <span></span>
+      <span id="col-nom"></span>
+      <span data-t="colonne_phrase"></span>
+    </div>
+    <div id="lignes" class="lignes"></div>
+  </section>
+
+  <div id="leds" class="leds" aria-hidden="true"></div>
+  <div id="etat" class="etat" role="status" aria-live="polite"></div>
+
+  <footer class="pied">
+    <button id="btn-tout" class="btn petit" data-t="tout"></button>
+    <button id="btn-rien" class="btn petit" data-t="rien"></button>
+    <button id="btn-go" class="btn go" data-t="lets_go"></button>
+    <span><a class="signature" href="https://github.com/tguillaume02/vox-pack-web" target="_blank" rel="noopener">tguillaume02</a> <br> <a class="signature" href="https://github.com/ritchy-lab/Vox-Pack" target="_blank" rel="noopener">ritchy-lab software version</a></span>
+  </footer>
+
+  <aside class="pub" aria-label="Publicité">
+    <span class="pub-label" data-t="pub">Publicité</span>
+    <!-- Remplacer data-ad-slot par l'ID du bloc d'annonces créé dans AdSense -->
+    <ins class="adsbygoogle"
+         data-ad-client="ca-pub-4153407965647556"
+         data-ad-slot="0000000000"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+</main>
+
+<dialog id="dialogue">
+  <div id="dlg-texte" class="dlg-texte"></div>
+  <div id="dlg-boutons" class="dlg-boutons"></div>
+</dialog>
+
+<input type="file" id="fichier-import" accept=".csv,.txt,text/csv,text/plain" hidden>
+<script src="app.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4153407965647556" crossorigin="anonymous"></script>
+</body>
+</html>
