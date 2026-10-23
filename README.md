@@ -16,6 +16,8 @@ Tu écris tes phrases, tu choisis une voix, tu appuies sur **Let's Go** : tu ré
 
 Le premier accès après une pause peut prendre jusqu'à une minute : le serveur de synthèse se réveille, un bandeau l'indique en haut de la page.
 
+![L'interface de Vox-Pack-Web](https://github.com/tguillaume02/Vox-Pack-Web-private/blob/main/captures/interface.png)
+
 ## Confidentialité
 
 Le texte des phrases est envoyé au serveur Vox-Pack-Web, qui le fait synthétiser par le service vocal en ligne de Microsoft Edge.
