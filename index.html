@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vox-Pack-Web</title>
+<meta name="description" content="Crée les fichiers de voix de ta radio EdgeTX">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vox-Pack-Web">
+<meta property="og:title" content="Vox-Pack-Web">
+<meta property="og:description" content="Crée les fichiers de voix de ta radio EdgeTX : 14 langues, 75 voix, WAV prêts pour la carte SD.">
+<meta property="og:url" content="https://tguillaume02.github.io/vox-pack-web/">
+<meta property="og:image" content="https://tguillaume02.github.io/vox-pack-web/og-image.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Vox-Pack-Web : radiocommande RC avec une onde audio sur l'écran, et le nom Vox-Pack-Web">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tguillaume02.github.io/vox-pack-web/og-image.png?v=2">
+<link rel="icon" href="icon-vox.svg" type="image/svg+xml">
+<link rel="icon" href="icon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,800&display=swap">
+<script>
+  // Thème appliqué avant l'affichage : choix enregistré, sinon clair par défaut
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("vp_theme"); } catch (e) {}
+    if (t !== "light" && t !== "dark") t = "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="style2.css">
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+<div id="bandeau" class="bandeau" role="status" aria-live="polite" hidden>
+  <span class="sablier" aria-hidden="true"></span>
+  <span id="bandeau-texte"></span>
+</div>
+
+<main class="app">
+  <!-- ---------- En-tête compact ---------- -->
+  <header class="entete">
+    <div class="marque">
+      <h1 class="brand">
+        <img class="brand-icon" src="icon-vox.svg" alt="" width="42" height="42">
+        <span class="brand-name">Vox-Pack-<span class="brand-sub">Web</span></span>
+      </h1>
+      <p id="compteurs" class="compteurs" hidden></p>
+    </div>
+    <nav class="outils">
+      <div class="deroulant">
+        <button id="btn-langue" class="pill" aria-haspopup="true" aria-expanded="false">
+          <span aria-hidden="true">🌐</span> <span id="code-langue">FR</span>
+        </button>
+        <div id="menu-langue" class="menu" hidden>
+          <div class="menu-titre" data-t="menu_langue"></div>
+          <div id="menu-langues" class="menu-langues"></div>
+        </div>
+      </div>
+      <div class="deroulant">
+        <button id="btn-menu" class="pill" aria-haspopup="true" aria-expanded="false">
+          <span aria-hidden="true">📁</span> <span data-t2="fichiers"></span>
+        </button>
+        <div id="menu" class="menu" hidden>
+          <button data-action="exporter" data-t="menu_exporter"></button>
+          <button data-action="importer" data-t="menu_importer"></button>
+          <button data-action="defaut" data-t="menu_defaut"></button>
+          <hr>
+          <button data-action="systeme-edgetx" id="menu-systeme-edgetx"></button>
+          <button data-action="systeme-opentx" id="menu-systeme-opentx"></button>
+        </div>
+      </div>
+      <div class="deroulant">
+        <button id="btn-soutenir" class="pill" aria-haspopup="true" aria-expanded="false">
+          <span aria-hidden="true">💙</span> <span data-t2="soutenir"></span>
+        </button>
+        <div id="menu-soutenir" class="menu menu-droite" hidden>
+          <a class="lien-kofi" href="https://ko-fi.com/thibaultguillaume" target="_blank" rel="noopener" data-t="kofi">☕ M'offrir un café</a>
+          <a class="lien-paypal" href="https://paypal.me/ThiDom" target="_blank" rel="noopener">💙 PayPal</a>
+          <a class="lien-sponsor" href="https://github.com/sponsors/tguillaume02" target="_blank" rel="noopener" data-t="sponsor">💖 Me sponsoriser</a>
+        </div>
+      </div>
+      <a class="pill" href="https://tguillaume02.github.io/" target="_blank" rel="noopener" data-t="projets">🔗 Mes autres projets</a>
+      <button id="btn-theme" class="pill rond" type="button" aria-label="Thème"></button>
+      <button id="btn-aide" class="pill rond" aria-label="Aide">?</button>
+    </nav>
+  </header>
+
+  <!-- ---------- 1 · Voix ---------- -->
+  <section class="carte reglages">
+    <div class="etiquette">
+      <span class="num">1</span> <span data-t2="voix"></span>
+      <select id="niveau" class="niveau" aria-label="Volume"></select>
+    </div>
+    <div class="reglages-corps">
+      <div class="ligne-voix">
+        <select id="voix" aria-label="Voix"></select>
+        <button id="btn-exemple" class="pill rond" aria-label="Écouter un exemple">▶</button>
+      </div>
+      <div class="segments" role="group">
+        <span id="lbl-robot" class="sr-only"></span>
+        <button id="robot-0" class="segment" type="button"></button>
+        <button class="segment pastille" data-robot="1">Robot 1</button>
+        <button class="segment pastille" data-robot="2">Robot 2</button>
+        <button class="segment pastille" data-robot="3">Robot 3</button>
+        <button class="segment pastille" data-robot="4">HAL</button>
+      </div>
+    </div>
+    <div id="zone-curseur" class="curseur" hidden>
+      <label for="curseur" data-t="niveau_curseur"></label>
+      <input type="range" id="curseur" min="-20" max="6" step="1">
+      <output id="val-curseur" for="curseur"></output>
+    </div>
+  </section>
+
+  <!-- ---------- 2 · Annonces ---------- -->
+  <section class="carte tableau">
+    <div class="barre">
+      <div class="etiquette"><span class="num">2</span> <span data-t2="annonces"></span></div>
+      <div class="recherche">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" id="recherche" autocomplete="off">
+      </div>
+      <button id="btn-ajouter" class="pill"><span aria-hidden="true">＋</span> <span data-t="ajouter"></span></button>
+      <button id="btn-ecouter" class="pill" data-t="ecouter"></button>
+      <button id="btn-supprimer" class="pill discret" data-t="supprimer"></button>
+    </div>
+    <div class="tete">
+      <input type="checkbox" id="case-tout" class="case">
+      <span id="col-nom"></span>
+      <span data-t="colonne_phrase"></span>
+      <span></span>
+    </div>
+    <div id="lignes" class="lignes"></div>
+    <p id="aucun-resultat" class="aucun" hidden></p>
+    <!-- Conservés pour app.js, remplacés par la case de l'en-tête -->
+    <button id="btn-tout" hidden></button>
+    <button id="btn-rien" hidden></button>
+  </section>
+
+  <!-- ---------- Barre d'action fixe ---------- -->
+  <footer class="action">
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+      <span id="toast-texte"></span>
+      <button id="toast-annuler" type="button" data-t="annuler"></button>
+    </div>
+    <span class="num grand" aria-hidden="true">3</span>
+    <div class="action-info">
+      <div class="action-texte">
+        <span id="nb-coches" class="nb"></span>
+        <span id="destination" class="destination"></span>
+        <span id="etat" class="etat" role="status" aria-live="polite"></span>
+      </div>
+      <div id="leds" class="leds" aria-hidden="true"></div>
+    </div>
+    <button id="btn-go" class="go" data-t="lets_go"></button>
+  </footer>
+
+  <p class="sous-titre"><span id="version-par">Version web par</span> <a href="https://github.com/tguillaume02/vox-pack-web" target="_blank" rel="noopener">tguillaume02</a><span data-t="sous_titre_base">, basé sur</span> ritchy-lab/Vox-Pack (MIT)</p>
+</main>
+
+<dialog id="dialogue">
+  <div id="dlg-texte" class="dlg-texte"></div>
+  <div id="dlg-boutons" class="dlg-boutons"></div>
+</dialog>
+
+<dialog id="don" class="don" aria-labelledby="don-titre">
+  <button type="button" class="don-croix" id="don-croix">×</button>
+  <h2 id="don-titre"></h2>
+  <p id="don-texte"></p>
+  <div class="don-boutons">
+    <a class="btn principal" id="don-kofi" href="https://ko-fi.com/thibaultguillaume" target="_blank" rel="noopener">☕ Ko-fi</a>
+    <a class="btn principal" id="don-paypal" href="https://paypal.me/ThiDom" target="_blank" rel="noopener">💙 PayPal</a>
+    <button type="button" class="btn" id="don-plus-tard"></button>
+  </div>
+</dialog>
+
+<input type="file" id="fichier-import" accept=".csv,.txt,text/csv,text/plain" hidden>
+<script src="langues.js"></script>
+<script src="app.js"></script>
+<script src="app2.js"></script>
+</body>
+</html>
